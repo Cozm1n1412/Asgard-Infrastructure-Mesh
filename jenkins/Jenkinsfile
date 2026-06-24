@@ -2,31 +2,46 @@ pipeline {
     agent any
 
     environment {
-        // Injecting the credentials we saved in Jenkins into secure environment variables
-        TELEGRAM_TOKEN   = credentials('TELEGRAM_TOKEN_SECRET')
-        TELEGRAM_CHAT_ID = credentials('TELEGRAM_CHAT_ID')
+        // Load Telegram secrets from Jenkins credentials manager
+        TF_VAR_telegram_bot_token = credentials('TELEGRAM_TOKEN_SECRET')
+        TF_VAR_telegram_chat_id   = credentials('TELEGRAM_CHAT_ID')
+        
+        // Local database password for the dev environment container
+        TF_VAR_postgres_password  = 'dev_secure_password_2026'
     }
 
     stages {
-        stage('1. Environment Checkout') {
+        stage('Fetch Source Code') {
             steps {
-                echo '=== Pulling latest Infrastructure as Code blueprint from GitHub ==='
+                echo 'Pulling latest files from repository...'
                 checkout scm
             }
         }
 
-        stage('2. Docker Socket Verification') {
+        stage('Terraform Init') {
             steps {
-                echo '=== Checking if Jenkins can communicate with Arch Linux Docker Engine ==='
-                sh 'docker ps'
+                dir('terraform') {
+                    echo 'Initializing terraform and downloading providers...'
+                    sh 'terraform init'
+                }
             }
         }
 
-        stage('3. Secret Integrity Check') {
+        stage('Terraform Plan') {
             steps {
-                echo '=== Validating secure credential injection ==='
-                // We mask the secret to prevent it from leaking in the logs
-                sh 'echo "Telegram Chat ID registered: $TELEGRAM_CHAT_ID"'
+                dir('terraform') {
+                    echo 'Checking infrastructure changes...'
+                    sh 'terraform plan'
+                }
+            }
+        }
+
+        stage('Terraform Apply') {
+            steps {
+                dir('terraform') {
+                    echo 'Deploying infrastructure mesh to local docker...'
+                    sh 'terraform apply --auto-approve'
+                }
             }
         }
     }
