@@ -1,0 +1,33 @@
+pipeline {
+    agent any
+
+    environment {
+        // Injecting the credentials we saved in Jenkins into secure environment variables
+        TELEGRAM_TOKEN   = credentials('TELEGRAM_TOKEN_SECRET')
+        TELEGRAM_CHAT_ID = credentials('TELEGRAM_CHAT_ID')
+    }
+
+    stages {
+        stage('1. Environment Checkout') {
+            steps {
+                echo '=== Pulling latest Infrastructure as Code blueprint from GitHub ==='
+                checkout scm
+            }
+        }
+
+        stage('2. Docker Socket Verification') {
+            steps {
+                echo '=== Checking if Jenkins can communicate with Arch Linux Docker Engine ==='
+                sh 'docker ps'
+            }
+        }
+
+        stage('3. Secret Integrity Check') {
+            steps {
+                echo '=== Validating secure credential injection ==='
+                // We mask the secret to prevent it from leaking in the logs
+                sh 'echo "Telegram Chat ID registered: $TELEGRAM_CHAT_ID"'
+            }
+        }
+    }
+}
