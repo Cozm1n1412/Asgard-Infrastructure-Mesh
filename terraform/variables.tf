@@ -13,5 +13,5 @@ variable "telegram_bot_token" {
 variable "telegram_chat_id" {
   type        = string
   description = "The Telegram chat ID where Muninn sends alerts"
-  default     = "8612421320"
+  default     = "secret-stored-in-jenkins"
 }
