@@ -7,7 +7,7 @@ variable "postgres_password" {
 variable "telegram_bot_token" {
   type        = string
   description = "The token for the Muninn Telegram Bot"
-  default     = "8937818194:AAFf3pJmm3Gg9mjV9nPWqmHqrV8Lj6dmk1w"
+  default = "secret-stored-in-jenkins"
 }
 
 variable "telegram_chat_id" {
