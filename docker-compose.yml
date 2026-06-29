@@ -22,8 +22,8 @@ services:
     environment:
       - JENKINS_URL=http://jenkinsmaster:8080/
       - JENKINS_TUNNEL=jenkinsmaster:50000
-      - JENKINS_SECRET=82467d1c6c6fafb135d74b90334262f6038df157b67300d11c496cb3ca513e9e
-      - JENKINS_AGENT_NAME=docker_agent_01
+      - JENKINS_SECRET=${JENKINS_AGENT_SECRET}
+      - JENKINS_AGENT_NAME=docker_agent_safe
       - JENKINS_AGENT_WORKDIR=/home/jenkins/agent
     volumes:
       - /home/cozm1n/asgard-infra-mesh/jenkins_work:/home/jenkins/agent
