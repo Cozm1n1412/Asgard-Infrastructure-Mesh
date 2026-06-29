@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  jenkinsmaster:
+    image: jenkins/jenkins:lts
+    container_name: asgard-jenkins-master
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    volumes:
+      - jenkins_master_data:/var/jenkins_home
+    networks:
+      - asgard_mesh_net
+
+  jenkins_agent:
+    image: jenkins/inbound-agent:latest
+    container_name: asgard_jenkins_agent
+    restart: unless-stopped
+    depends_on:
+      - jenkinsmaster
+    environment:
+      - JENKINS_URL=http://jenkinsmaster:8080/
+      - JENKINS_TUNNEL=jenkinsmaster:50000
+      - JENKINS_SECRET=82467d1c6c6fafb135d74b90334262f6038df157b67300d11c496cb3ca513e9e
+      - JENKINS_AGENT_NAME=docker_agent_01
+      - JENKINS_AGENT_WORKDIR=/home/jenkins/agent
+    volumes:
+      - /home/cozm1n/asgard-infra-mesh/jenkins_work:/home/jenkins/agent
+      - /usr/bin/terraform:/usr/bin/terraform:ro
+    networks:
+      - asgard_mesh_net
+
+volumes:
+  jenkins_master_data:
+
+networks:
+  asgard_mesh_net:
+    driver: bridge

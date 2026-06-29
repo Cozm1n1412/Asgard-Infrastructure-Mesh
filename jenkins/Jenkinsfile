@@ -1,5 +1,10 @@
 pipeline {
-    agent any
+    agent { label 'docker-build'}
+    
+    options {
+        disableConcurrentBuilds()
+        timestamps()
+    } 
 
     environment {
         // Load Telegram secrets from Jenkins credentials manager
@@ -11,13 +16,6 @@ pipeline {
     }
 
     stages {
-        stage('Fetch Source Code') {
-            steps {
-                echo 'Pulling latest files from repository...'
-                checkout scm
-            }
-        }
-
         stage('Terraform Init') {
             steps {
                 dir('terraform') {
