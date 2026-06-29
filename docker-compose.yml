@@ -28,6 +28,7 @@ services:
     volumes:
       - /home/cozm1n/asgard-infra-mesh/jenkins_work:/home/jenkins/agent
       - /usr/bin/terraform:/usr/bin/terraform:ro
+      - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - asgard_mesh_net
 
